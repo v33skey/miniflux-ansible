@@ -1,6 +1,7 @@
 - name: Создание юзеров deploy и v33skey(admin)
   hosts: vps
   become: true
+  remote_user: root
   vars:
     v33skey_passwd: !vault |
           $ANSIBLE_VAULT;1.1;AES256
