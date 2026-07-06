@@ -1,0 +1,27 @@
+- name: Запуск miniflux
+  hosts: vps
+  remote_user: deploy
+  vars_files: 
+    - miniflux_vars.yml
+  vars:
+    ansible_ssh_private_key_file: ~/.ssh/deploy
+  tasks:
+    - name: Создание директории под проект
+      ansible.builtin.file:
+        path: ~/miniflux
+        mode: '0700'
+        state: directory
+    - name: Формирование .env файла для docker-compose
+      ansible.builtin.template:
+        src: db.env.j2
+        dest: ~/miniflux/db.env
+        mode: '0600'
+    - name: тянем docker-compose.yml из репозитория
+      ansible.builtin.copy:
+        src: docker-compose.yml
+        dest: ~/miniflux/docker-compose.yml
+        mode: '0600'
+    - name: Запуск docker-compoe.yml
+      community.docker.docker_compose_v2:
+        project_src: ~/miniflux
+        state: present
